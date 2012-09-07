@@ -15,6 +15,7 @@ PRIORITIES = {
 }
 
 PRIORITY_HEADER = 'X-Mail-Queue-Priority'
+SCHEDULED_HEADER = 'X-Mail-Queue-Scheduled-Date'
 
 try:
     from django.core.mail import get_connection

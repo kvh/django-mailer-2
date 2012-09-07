@@ -114,6 +114,12 @@ def queue_email_message(email_message, fail_silently=False, priority=None):
             return (result == constants.RESULT_SENT)
         else:
             return email_message.send()
+
+    # support for scheduling later
+    queue_date = None
+    if constants.SCHEDULED_HEADER in email_message.extra_headers:
+        queue_date = email_message.extra_headers.pop(constants.SCHEDULED_HEADER)
+
     count = 0
     for to_email in email_message.recipients():
         message = models.Message.objects.create(
@@ -121,6 +127,8 @@ def queue_email_message(email_message, fail_silently=False, priority=None):
             subject=email_message.subject,
             encoded_message=email_message.message().as_string())
         queued_message = models.QueuedMessage(message=message)
+        if queue_date:
+            queued_message.date_queued = queue_date
         if priority:
             queued_message.priority = priority
         queued_message.save()
